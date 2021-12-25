@@ -1,11 +1,11 @@
-package petStore.addNewPet;
+package petStore.petStoreModels;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class AddPetRequest{
+public class AddPetModel {
     private List<String> photoUrls;
     private String name;
     private Integer id;
