@@ -2,24 +2,26 @@ package petStore.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import petStore.REST.RESTfulRequests;
-import petStore.petStoreModels.AddPetModel;
-import petStore.petStoreModels.Category;
+import petStore.petStoreModels.PetModel;
 import petStore.utility.ExcelUtility;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PetTest {
 
     public static String baseUrlPath = "https://petstore.swagger.io/v2/";
     public static String addNewPetPath = "pet";
+    public static String getPetByIDPath = "pet/{petId}";
 
     public static String addNewPetDataPath = "src/test/java/petStore/testData/addNewPetData.xlsx";
+    public static String updatePetDataPath = "src/test/java/petStore/testData/updatePetData.xlsx";
 
-    @Test
     void randomTest(String id, String name, String status){
 
         double ID = Double.parseDouble(id);
@@ -40,7 +42,7 @@ public class PetTest {
     void testAddNewPet(String id, String name, String status) throws JsonProcessingException {
 
         // Create new requestBody
-        AddPetModel petRequest = new AddPetModel();
+        PetModel petRequest = new PetModel();
 
         int petID = (int)Double.parseDouble(id);
         petRequest.setId(petID);
@@ -58,7 +60,7 @@ public class PetTest {
         Assert.assertEquals(response.getStatusCode(), 200, "Status is not the same!");
 
         // Convert response back to AddPetModel
-        AddPetModel petResponse = response.as(AddPetModel.class);
+        PetModel petResponse = response.as(PetModel.class);
 
         // Name validation
         System.out.println("Name Response: " + petResponse.getName() + " Request: " + petRequest.getName());
@@ -71,11 +73,58 @@ public class PetTest {
         Assert.assertEquals(petResponse.getStatus(), petRequest.getStatus(), "Pet status is not the same!");
     }
 
+    @Test(dataProvider = "UpdatePet")
+    void testUpdatePet(String id, String name, String status){
+        // Create new requestBody
+        PetModel petRequest = new PetModel();
+
+        int petID = (int)Double.parseDouble(id);
+        petRequest.setId(petID);
+        petRequest.setName(name);
+        petRequest.setStatus(status);
+
+        // Used to convert Java class to JSON string
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(petRequest);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        Response response = RESTfulRequests.post(baseUrlPath+addNewPetPath, requestBody);
+
+        response.prettyPrint();
+        // Status code validation
+        Assert.assertEquals(response.getStatusCode(), 200, "Status is not the same!");
+    }
+
+    @Test(dataProvider = "AddNewPet")
+    void testFindPetByID(String id, String name, String status){
+
+        int petId = (int)Double.parseDouble(id);
+        Map<String, String> params = new HashMap<>();
+        params.put("petId", petId + "");
+
+        Response response = RESTfulRequests.get(baseUrlPath+getPetByIDPath, params);
+
+        response.prettyPrint();
+        // Status code validation
+        Assert.assertEquals(response.getStatusCode(), 200, "Status is not the same!");
+    }
+
     @DataProvider(name = "AddNewPet")
     public static Object[][] addNewPetProvider(){
         Object[][] newPetData = ExcelUtility.getTableArray(addNewPetDataPath, "Sheet1");;
 
         return newPetData;
     }
+    @DataProvider(name = "UpdatePet")
+    public static Object[][] updatePetProvider(){
+        Object[][] newPetData = ExcelUtility.getTableArray(updatePetDataPath, "Sheet1");;
+
+        return newPetData;
+    }
+
 
 }

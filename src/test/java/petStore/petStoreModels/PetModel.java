@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class AddPetModel {
+public class PetModel {
     private List<String> photoUrls;
     private String name;
     private Integer id;
