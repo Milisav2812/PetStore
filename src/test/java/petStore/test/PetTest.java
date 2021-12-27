@@ -18,6 +18,7 @@ public class PetTest {
     public static String baseUrlPath = "https://petstore.swagger.io/v2/";
     public static String addNewPetPath = "pet";
     public static String getPetByIDPath = "pet/{petId}";
+    public static String deletePetByIDPath = "pet/{petId}";
 
     public static String addNewPetDataPath = "src/test/java/petStore/testData/addNewPetData.xlsx";
     public static String updatePetDataPath = "src/test/java/petStore/testData/updatePetData.xlsx";
@@ -92,7 +93,7 @@ public class PetTest {
             e.printStackTrace();
         }
 
-        Response response = RESTfulRequests.post(baseUrlPath+addNewPetPath, requestBody);
+        Response response = RESTfulRequests.put(baseUrlPath+addNewPetPath, requestBody);
 
         response.prettyPrint();
         // Status code validation
@@ -111,6 +112,21 @@ public class PetTest {
         response.prettyPrint();
         // Status code validation
         Assert.assertEquals(response.getStatusCode(), 200, "Status is not the same!");
+    }
+
+    @Test(dataProvider = "AddNewPet")
+    void testDeletePet(String id, String name, String status){
+
+        int petId = (int)Double.parseDouble(id);
+        Map<String, String> params = new HashMap<>();
+        params.put("petId", petId + "");
+
+        Response response = RESTfulRequests.delete(baseUrlPath+deletePetByIDPath, params);
+
+        response.prettyPrint();
+        // Status code validation
+        Assert.assertEquals(response.getStatusCode(), 200, "Status is not the same!");
+
     }
 
     @DataProvider(name = "AddNewPet")

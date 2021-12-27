@@ -22,6 +22,20 @@ public class RESTfulRequests {
         return response;
     }
 
+    public static Response delete(String uriString, Map<String, String> params){
+        Response response = RestAssured
+                .given()
+                .log().all()
+                .pathParams(params)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(uriString)
+                .then()
+                .extract().response();
+
+        return response;
+    }
+
     public static Response post(String uriString, String requestBody){
         Response response = RestAssured
                 .given()
