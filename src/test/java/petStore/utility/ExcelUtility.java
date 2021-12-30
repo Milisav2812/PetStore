@@ -19,9 +19,9 @@ public class ExcelUtility {
     private static XSSFCell Cell;
     private static XSSFRow Row;
 
-    public static Object[][] getTableArray(String filePath, String sheetName){
+    public static Object[][] getTableArray(String filePath, String sheetName, int numberOfColumns){
 
-        String[][] newPetDataArray = null;
+        String[][] newTableArray = null;
 
         try {
             // Open excel file
@@ -35,17 +35,19 @@ public class ExcelUtility {
             int startRow = 1;
             int startCol = 1;
 
-            int totalRows = ExcelWSheet.getLastRowNum();
-            int totalCols = 4;
+            int totalRows = ExcelWSheet.getLastRowNum() + 1;
+            int totalCols = numberOfColumns;
+            //System.out.println(totalRows);
+            //System.out.println(totalCols);
 
-            newPetDataArray = new String[totalRows-1][totalCols-1];
+            newTableArray = new String[totalRows-1][totalCols-1];
 
             for(int i=startRow; i<totalRows; i++){
                 //System.out.println("Currently reading from: " + ExcelWSheet.getRow(i).getCell(0));
                 for(int j=startCol;j<totalCols;j++){
-                    // System.out.println(ExcelWSheet.getRow(i).getCell(j));
+                    //System.out.println(ExcelWSheet.getRow(i).getCell(j).toString());
 
-                    newPetDataArray[i-1][j-1] = ExcelWSheet.getRow(i).getCell(j).toString();
+                    newTableArray[i-1][j-1] = ExcelWSheet.getRow(i).getCell(j).toString();
 
                 }
             }
@@ -57,7 +59,7 @@ public class ExcelUtility {
             e.printStackTrace();
         }
 
-        return (newPetDataArray);
+        return (newTableArray);
     }
 }
 
